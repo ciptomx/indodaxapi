@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Dashboard Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/styles.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+        <title>Page Title</title>
+        <script src="js/jquery-3.1.1.js"></script>
+<script javascript>
+var reloadData = 10; // dalam detik
+
+var timer;
+
+function updateDataAPI() {
+
+  $.ajax({
+    url: 'https://indodax.com/api/summaries',
+    success: function(data) {
+      var row;
+
+      $('#coins').html('<div class="table-responsive"><table class="table-stripped"><caption class="h3">DAFTAR HARGA CRYPTO TERKINI</caption><tr><th>Coin</th><th>Coin Pairs</th><th>Harga</th> <th>Beli</th> <th>Jual</th> <th>High 24h</th><th>Low 24h</th></tr>')
+      for (var key in data.tickers) {
+      if(!['bcd_idr', 'nxt_idr', 'str_idr', 'ignis_idr', 'ada_idr'].includes(key)) continue; //kustom daftar coin
+        row = `<tr>
+               <td>` + (data.tickers[key].name) + `</td>
+              <td>` + key.toUpperCase() + `</td>
+              <td>` + formatNumber (data.tickers[key].last) + `</td>
+             <td>` + formatNumber(data.tickers[key].buy) + `</td>
+             <td>` + formatNumber(data.tickers[key].sell) + `</td>
+              <td>` + formatNumber(data.tickers[key].high) + `</td>
+              <td>` + formatNumber(data.tickers[key].low) + `</td>
+            </tr></table></div>`
+        $('#coins tr:last').after(row);
+      }
+
+      clearTimeout(timer)
+      $('#timer').html(reloadData)
+      setTimeout(updateDataAPI, reloadData * 1000)
+      updateTimer()
+    },
+    error: function(err) {
+      alert("Tidak bisa mengambil data API")
+    }
+  })
+}
+
+function formatNumber(n) {
+  if (n.indexOf('.') > -1)
+    return parseFloat(n).toFixed(8);
+  else
+    return parseInt(n).toLocaleString("id-ID")
+}
+
+function updateTimer() {
+  a = parseInt($('#timer').html())
+  $('#timer').html(a - 1)
+  if (a > 0)
+    timer = setTimeout(updateTimer, 1000)
+}
+updateDataAPI()
+</script>
+<style>
+  table {
+  border-collapse: collapse;
+  width: 100%;
+  }
+
+  table td,
+  table th {
+  border: 1px solid #ddd;
+  padding: 8px;
+  }
+
+  table tr:nth-child(even) {
+  background-color: #f2f2f2;
+  }
+
+  table tr:hover {
+  background-color: #ddd;
+  }
+
+  table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+  }
+
+  
+</style>
+</head>
+    <body>
+<table id="coins" class="table-responsive">
+<caption>DAFTAR HARGA CRYPTO TERKINI</caption>
+  <tr>
+    <th>Coin</th>
+    <th>Coin Pairs</th>
+    <th>Harga</th>
+    <th>Beli</th>
+    <th>Jual</th>
+    <th>High 24h</th>
+    <th>Low 24h</th>
+  </tr>
+</table>
+
+    <p class="alert alert-info pull-left" style="width: 50%">Waktu Update 
+
+    <span class="alert-danger h4" id="timer">0</span> detik
+  </p>
+
+    </body>
+</html>
